@@ -57,10 +57,11 @@ const userSchema = new Schema({
   
     return user;
   };
-
+/*
   userSchema.pre('remove', function(next) {
     this.model('Message').deleteMany({ userId: this._id }, next);
   });
+*/
   
   userSchema.pre('save', async function() {
     this.password = await this.generatePasswordHash();

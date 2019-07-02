@@ -2,11 +2,11 @@ import 'dotenv/config';
 import cors from 'cors';
 import express from 'express';
 import { ApolloServer, AuthenticationError } from 'apollo-server-express';
-import schema from './schema';
+import userTypeDefs from './schema/user';
 import resolvers from './resolvers';
 import models, { connectDb } from './models';
 import jwt from 'jsonwebtoken';
-
+const { buildFederatedSchema } = require('@apollo/federation');
  
 
 const app = express();
@@ -18,9 +18,10 @@ app.use(cors());
 
 const getMe = async req => {
   const token = req.headers['x-token'];
-  //console.log('token', token);
-  if (token) {
+  console.log('tokennn length', token.length);
+  if (token !== 'undefined') {
     try {
+      console.log('in try ');
       return await jwt.verify(token, process.env.SECRET);
     } catch (e) {
       console.log(e);
@@ -33,10 +34,13 @@ const getMe = async req => {
 
 
 
-const server = new ApolloServer({
 
-  typeDefs: schema,
-  resolvers,
+
+const server = new ApolloServer({
+//schema: buildFederatedSchema([{ schema }]),
+schema: buildFederatedSchema([{ typeDefs: userTypeDefs, resolvers }]),
+ // typeDefs: schema,
+//resolvers,
   introspection: true, // enables introspection of the schema
   playground: true, // enables the actual playground
   context: async ({ req }) => {
@@ -75,14 +79,15 @@ connectDb().then(async () => {
     /*
     await Promise.all([
     models.User.deleteMany({}),
-    models.Message.deleteMany({}),
-    models.Question.deleteMany({}),
-    models.QuestionBook.deleteMany({}),
+    models.Group.deleteMany({}),
+    //models.Message.deleteMany({}),
+    //models.Question.deleteMany({}),
+    //models.QuestionBook.deleteMany({}),
     ]); 
 
     createUsersWithMessages(new Date());
-
-    */
+*/
+    
     console.log('DB connected'); 
   }   
 }); 
@@ -100,10 +105,44 @@ const createUsersWithMessages = async date => {
 
 
   const user2 = new models.User({
-    username: 'masood',
-    email: 'masood@integrify.io',
+    username: 'masood2',
+    email: 'masood2@integrify.io',
     password: 'masood123',
+    role: 'STUDENT'
   });
+
+  const user3 = new models.User({
+    username: 'masood3',
+    email: 'masood3@integrify.io',
+    password: 'masood123',
+    role: 'STUDENT',
+  });
+
+  const user4 = new models.User({
+    username: 'masood4',
+    email: 'masood4@integrify.io',
+    password: 'masood123',
+    role: 'STUDENT'
+  });
+
+  const group1 = new models.Group({
+    name: "ADMIN",
+    members: [user1],
+  });
+
+  const group2 = new models.Group({
+    name: "STUDENT",
+    members: [user2, user3, user4],
+  });
+
+  await group1.save();
+  await group2.save();
+
+
+  await user1.save();
+  await user2.save();
+  await user3.save(); 
+  await user4.save(); 
 
 
 
@@ -130,81 +169,6 @@ const createUsersWithMessages = async date => {
   */
 
   
-
-  const question1 = new models.Question({
-    statement: 'What is programming',   
-    category: 'general',
-    type: 'Short',
-    level: 'Easy',
-    answer: 'answer',
-    options: ['a', 'b', 'c', 'd'],
-    author: user2.id,
-    book: 'javascript',
-    createdAt: date.setSeconds(date.getSeconds() + 1),    
-  });
-
-
-  const question2 = new models.Question({
-    statement: 'What are promises',   
-    category: 'Promises',
-    type: 'Long',
-    level: 'Advance',
-    answer: 'answer',
-    options: ['i', 'j', 'k', 'l'],
-    author: user2.id,
-    book: 'javascript',
-    createdAt: date.setSeconds(date.getSeconds() + 1),    
-  });
-
-  const question3 = new models.Question({
-    statement: 'What are Functions',   
-    category: 'Functions',
-    type: 'Short',
-    level: 'Intermediate',
-    answer: 'answer',
-    options: ['i', 'j', 'k', 'l'],
-    author: user2.id,
-    book: 'javascript',
-    createdAt: date.setSeconds(date.getSeconds() + 1),    
-  });
-
-  const question4 = new models.Question({
-    statement: 'What is arrays',   
-    category: 'Arrays',
-    type: 'True/False',
-    level: 'Advance',
-    answer: 'answer',
-    options: ['i', 'j', 'k', 'l'],
-    author: user2.id,
-    book: 'javascript',
-    createdAt: date.setSeconds(date.getSeconds() + 1),    
-  });
-
-  const question5 = new models.Question({
-    statement: 'Reverse Array of Strings',   
-    category: 'Arrays',
-    type: 'Programming',
-    level: 'Hard',
-    answer: 'answer',
-    options: ['i', 'j', 'k', 'l'],
-    author: user2.id,
-    book: 'javascript',
-    createdAt: date.setSeconds(date.getSeconds() + 1),    
-  });
-
-  const questionBookOne = new models.QuestionBook({
-    book: 'javascript',
-    categories: ['General', 'Loops', 'Arrays', 'Functions', 'Promises'],
-    types: ['MCQ', 'True/False', 'Programming', 'Short', 'Long', 'Find Bug(s)'],
-    levels: ['Easy', 'Intermediate', 'Hard', 'Advance']
-  });
-
-  const questionBookTwo = new models.QuestionBook({
-    book: 'python',
-    categories: ['General', 'Loops', 'Arrays', 'Functions', 'Promises'],
-    types: ['MCQ', 'True/False', 'Programming', 'Short', 'Long', 'Find Bug(s)'],
-    levels: ['Easy', 'Intermediate', 'Hard', 'Advance']
-  });
 
   /*
   await message1.save();

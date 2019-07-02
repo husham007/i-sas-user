@@ -7,7 +7,7 @@ import { isAdmin } from './authorization';
 export default {
     Query: {
         groups: async (parent, params, { models }) => {
-           
+           console.log('groups');
             const groups = await models.Group.find(
               {},
               null,
@@ -20,10 +20,16 @@ export default {
       
             return groups
           },
-        group: async (parent, { id }, { models }) => {
+        group: async (group, { id }, { models }) => {
             return await models.Group.findById(id);
         },
     },
+
+    Group: {
+        async __resolveReference(group, {id}, {models}) {
+          return await models.Group.findById(group.id);
+        }
+      },
 
     Mutation: {
         createGroup: combineResolvers(isAdmin, (parent, { name, members }, { me, models }) => {

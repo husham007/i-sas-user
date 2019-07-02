@@ -5,6 +5,8 @@ export default gql`
     users: [User!]
     user(id: ID!): User
     me: User
+    groups: [Group!]
+    group(id: ID!): Group!
   }
 
   extend type Mutation {
@@ -20,13 +22,15 @@ export default gql`
     signIn(email: String!, password: String!): Token!
     deleteUser(id: ID!): Boolean!
     updateUser(username: String!): User!
+    createGroup(name: String!, members: [String!]): Group!
+    deleteGroup(id: ID!): Boolean!
   }
 
   type Token {
     token: String!
   }
 
-  type User {
+  type User @key (fields: "username"){
     id: ID!
     username: String!
     group: [Group!]
@@ -35,8 +39,9 @@ export default gql`
     email: String!
   }
 
-  type Group {
+  type Group @key (fields: "id"){
     id: ID!
-
+    name: String!
+    members: [User!]
   }
 `;
