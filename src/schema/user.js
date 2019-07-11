@@ -30,7 +30,7 @@ export default gql`
     token: String!
   }
 
-  type User @key (fields: "username"){
+  type User @key (fields: "id"){
     id: ID!
     username: String!
     group: [Group!]

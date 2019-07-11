@@ -113,7 +113,8 @@ export default {
 
   User: {
 
-    async __resolveReference(parent, args, { me }) {
+    async __resolveReference(parent, { me, models }) {
+      //console.log(models);
       return await models.User.findById(parent.id)
     }
 

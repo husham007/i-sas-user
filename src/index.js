@@ -18,17 +18,19 @@ app.use(cors());
 
 const getMe = async req => {
   const token = req.headers['x-token'];
-  console.log('tokennn length', token.length);
-  if (token !== 'undefined') {
-    try {
-      console.log('in try ');
-      return await jwt.verify(token, process.env.SECRET);
-    } catch (e) {
-      console.log(e);
-      throw new AuthenticationError(
-        'Your session expired. Sign in again.',
-      );
+  console.log('token in user', typeof token);
+  if (token ) {
+    if (token !== "undefined"){
+      try {
+        return await jwt.verify(token, process.env.SECRET);
+      } catch (e) {
+        console.log(e);
+        throw new AuthenticationError(
+          'Your session expired. Sign in again.',
+        );
+      }  
     }
+    
   }
 };
 
