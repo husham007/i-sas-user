@@ -6,6 +6,11 @@ export const isAuthenticated = (parent, args, { me }) =>{
  
 }
 
+export const isTest = (parent, args, { me }) =>{
+ return skip
+ 
+}
+
   
 
   export const isMessageOwner = async (

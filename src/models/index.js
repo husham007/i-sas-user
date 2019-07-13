@@ -3,7 +3,8 @@ import User from './user';
 import Message from './message';
 import Question from './question';
 import QuestionBook from './questionBook';
-import Group from './group'
+import Group from './group';
+mongoose.set('useFindAndModify', false);
 
 
 const connectDb = () => {

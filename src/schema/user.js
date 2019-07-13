@@ -22,9 +22,17 @@ export default gql`
     signIn(email: String!, password: String!): Token!
     deleteUser(id: ID!): Boolean!
     updateUser(username: String!): User!
+
+    ######
     createGroup(name: String!, members: [String!]): Group!
     deleteGroup(id: ID!): Boolean!
-  }
+
+
+    #######
+   publishExamToGroup(examId: ID!, groupId: ID!): Boolean!
+  
+    }
+  scalar Date
 
   type Token {
     token: String!
@@ -37,11 +45,16 @@ export default gql`
     password: String!
     role: String
     email: String!
+    exams: [Exam]
   }
 
   type Group @key (fields: "id"){
     id: ID!
     name: String!
     members: [User!]
+  }
+
+  extend type Exam @key(fields: "id") {
+    id: ID! @external    
   }
 `;

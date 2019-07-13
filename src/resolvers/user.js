@@ -116,7 +116,15 @@ export default {
     async __resolveReference(parent, { me, models }) {
       //console.log(models);
       return await models.User.findById(parent.id)
-    }
+    },
+
+    exams(user) {
+      //console.log('exam', exam.questions);
+      return user.exams.map(examId=> {
+        return { __typename: "Exam", id: examId }        
+        
+      })
+    },
 
     /*
     messages: async (user, args, { models }) => {
