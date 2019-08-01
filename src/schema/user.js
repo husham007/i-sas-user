@@ -22,6 +22,7 @@ export default gql`
     signIn(email: String!, password: String!): Token!
     deleteUser(id: ID!): Boolean!
     updateUser(username: String!): User!
+    initialUserExamSolution(examId: ID!, userId: ID!): User!
 
     ######
     createGroup(name: String!, members: [String!]): Group!
@@ -46,6 +47,7 @@ export default gql`
     role: String
     email: String!
     exams: [Exam]
+    examSolutions: [ExamSolution]
   }
 
   type Group @key (fields: "id"){
@@ -55,6 +57,10 @@ export default gql`
   }
 
   extend type Exam @key(fields: "id") {
+    id: ID! @external    
+  }
+
+  extend type ExamSolution @key(fields: "id") {
     id: ID! @external    
   }
 `;

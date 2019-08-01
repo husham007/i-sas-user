@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { AuthenticationError, UserInputError } from 'apollo-server';
 import { combineResolvers } from 'graphql-resolvers';
-import { isAdmin, isAuthenticated } from './authorization';
+import { isAdmin, isAuthenticated, isTest } from './authorization';
 
 const createToken = async (user, secret, expiresIn) => {
   const { id, email, username, role } = user;
@@ -96,6 +96,18 @@ export default {
       },
     ),
 
+    initialUserExamSolution: combineResolvers(
+      isTest,
+      async (parent, { examId, userId }, { models, me }) => {
+      return await models.User.findOneAndUpdate(
+          {_id: userId},
+          { $push: { examSolutions: examId } },
+          {new: true}
+       );
+      
+      },
+    ),
+
     deleteUser: combineResolvers(
       isAdmin,
       async (parent, { id }, { models }) => {
@@ -122,6 +134,13 @@ export default {
       //console.log('exam', exam.questions);
       return user.exams.map(examId=> {
         return { __typename: "Exam", id: examId }        
+        
+      })
+    },
+    examSolutions(user) {
+      //console.log('exam', exam.questions);
+      return user.examSolutions.map(examSolutionId=> {
+        return { __typename: "ExamSolution", id: examSolutionId }        
         
       })
     },
