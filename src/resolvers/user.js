@@ -95,16 +95,50 @@ export default {
         );
       },
     ),
-
-    initialUserExamSolution: combineResolvers(
+    initializeUserExamSolution: combineResolvers(
       isTest,
       async (parent, { examId, userId }, { models, me }) => {
-      return await models.User.findOneAndUpdate(
-          {_id: userId},
-          { $push: { examSolutions: examId } },
-          {new: true}
-       );
-      
+        const user = await models.User.findOne({ _id: userId });
+        if (!user.examSolutions) {
+          user.examSolutions = new Map();
+        }
+        user.examSolutions.set(examId, { examId, status: "Initialized" });       
+        if (await user.save()) {
+          return true;
+        } else {
+          return false;
+        }
+        /*
+              return await models.User.findOneAndUpdate(
+                  {_id: userId},
+                  { $push: { examSolutions: examId } },
+                  {new: true}
+               );
+           */
+      },
+    ),
+
+
+    finalizeUserExamSolution: combineResolvers(
+      isTest,
+      async (parent, { examId, userId }, { models, me }) => {
+        const user = await models.User.findOne({ _id: userId });
+        if (!user.examSolutions) {
+          user.examSolutions = new Map();
+        }
+        user.examSolutions.set(examId, { examId, status: "finalized" });       
+        if (await user.save()) {
+          return true;
+        } else {
+          return false;
+        }
+        /*
+              return await models.User.findOneAndUpdate(
+                  {_id: userId},
+                  { $push: { examSolutions: examId } },
+                  {new: true}
+               );
+           */
       },
     ),
 
@@ -132,17 +166,27 @@ export default {
 
     exams(user) {
       //console.log('exam', exam.questions);
-      return user.exams.map(examId=> {
-        return { __typename: "Exam", id: examId }        
-        
+      return user.exams.map(examId => {
+        return { __typename: "Exam", id: examId }
+
       })
     },
     examSolutions(user) {
       //console.log('exam', exam.questions);
+      let examSolutions = [...user.examSolutions.values()];
+      return examSolutions.map(examSolution => {
+        return {
+          examSolution: { __typename: "ExamSolution", id: examSolution.examId },
+          status: examSolution.status
+        }
+
+      })
+      /*
       return user.examSolutions.map(examSolutionId=> {
         return { __typename: "ExamSolution", id: examSolutionId }        
         
       })
+      */
     },
 
     /*

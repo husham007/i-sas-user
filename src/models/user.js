@@ -18,15 +18,15 @@ const userSchema = new Schema({
       type: String,
       required: true,
       minlength: 7,
-      maxlength: 42,
+      maxlength: 60,
     },
     exams: {
       type: Array,
       of: String,  
     },
     examSolutions: {
-      type: Array,
-      of: String,
+      type: Map,
+      of: Object,
     },
     examReports: {
       type: Array,
@@ -63,12 +63,18 @@ const userSchema = new Schema({
   });
 */
   
-  userSchema.pre('save', async function() {
+  userSchema.pre('save', async function(next) {
+    let user = this;
+    
+    if (!user.isModified('password')) {
+      console.log('password not modified');
+      return next();
+  }
     this.password = await this.generatePasswordHash();
   });
   
   userSchema.methods.generatePasswordHash = async function() {
-    const saltRounds = 10;
+    const saltRounds = 10;    
     return await bcrypt.hash(this.password, saltRounds);
   };
   
