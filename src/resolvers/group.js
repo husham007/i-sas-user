@@ -29,7 +29,7 @@ export default {
     async __resolveReference(group, { id }, { models }) {
       return await models.Group.findById(group.id);
     },
-    members: async (parent, args, {models})=>{
+    members: async (parent, args, { models }) => {
       return parent.members.map(memberId => {
         return models.User.findById(memberId);
       })
@@ -62,7 +62,7 @@ export default {
 
     }),
 
-    publishExamToGroup: async (parent, { examId, groupId }, { models }) => {
+    publishExamToGroup: async (parent, { examId, groupId, time, duration }, { models }) => {
       const group = await models.Group.findById(groupId);
       //console.log(group);
       if (!group) {
@@ -71,11 +71,22 @@ export default {
       else if (group.members.length !== 0) {
         //console.log(group.members);
         group.members.forEach(async memberId => {
-          
-         
-           await models.User.findOneAndUpdate(
-            {_id: memberId}, { $push: {exams: examId}}, 
-            );          
+
+          const user = await models.User.findOne({ _id: memberId });
+          user.exams.set(examId,
+            { exam: examId, status: "assigned", solution: null, time, duration, report: null });
+
+          if (await user.save()) {
+            return true;
+          } else {
+            return false;
+          }
+
+          /*
+            await models.User.findOneAndUpdate(
+             {_id: memberId}, { $push: {exams: examId}}, 
+             );  
+             */
         });
         return true;
       } else return false;

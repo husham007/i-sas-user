@@ -33,14 +33,16 @@ export default {
   Mutation: {
     signUp: async (
       parent,
-      { username, email, password, key, url },
+      { username, email, password, key, picture },
       { models, secret, student, teacher },
     ) => {
       let role;
+      let exams = null;
       //console.log(username, email, password, key);
 
       if (key === student) {
         role = 'STUDENT';
+        exams = new Map();
       } else if (key === teacher) {
         role = 'ADMIN';
       } else {
@@ -56,7 +58,8 @@ export default {
         email,
         password,
         role,
-        url,
+        picture,
+        exams,
       });
 
       //console.log(user);
@@ -97,13 +100,22 @@ export default {
     ),
     initializeUserExamSolution: combineResolvers(
       isTest,
-      async (parent, { examId, userId }, { models, me }) => {
+      async (parent, { examId, solutionId, userId }, { models, me }) => {
         const user = await models.User.findOne({ _id: userId });
+        /*
         if (!user.examSolutions) {
           user.examSolutions = new Map();
         }
-        user.examSolutions.set(examId, { examId, status: "Initialized" });       
-        if (await user.save()) {
+        user.examSolutions.set(examId, { examId, status: "Initialized" });     
+        */
+       
+        let exam = user.exams.get(examId);
+        exam.solution = solutionId;
+        exam.status = "initialized";
+        user.exams.set(examId, exam);
+       
+
+        if (await user.save()){
           return true;
         } else {
           return false;
@@ -121,13 +133,15 @@ export default {
 
     finalizeUserExamSolution: combineResolvers(
       isTest,
-      async (parent, { examId, userId }, { models, me }) => {
+      async (parent, { examId, userId, solutionId }, { models, me }) => {
         const user = await models.User.findOne({ _id: userId });
-        if (!user.examSolutions) {
-          user.examSolutions = new Map();
-        }
-        user.examSolutions.set(examId, { examId, status: "finalized" });       
-        if (await user.save()) {
+        let exam = user.exams.get(examId);
+        exam.solution = solutionId;
+        exam.status = "finalized";
+        user.exams.set(examId, exam);
+       
+
+        if (await user.save()){
           return true;
         } else {
           return false;
@@ -166,11 +180,27 @@ export default {
 
     exams(user) {
       //console.log('exam', exam.questions);
+      /*
       return user.exams.map(examId => {
         return { __typename: "Exam", id: examId }
 
       })
+      */
+     let exams = [...user.exams.values()];
+     return exams.map(exam => {
+      return {
+        exam: { __typename: "Exam", id: exam.exam },
+        status: exam.status,
+        solution: exam.solution ? { __typename: "ExamSolution", id: exam.solution }: null,
+        report: exam.report,
+        time: exam.time,
+        duration: exam.duration,
+      }
+
+    })
     },
+
+    /*
     examSolutions(user) {
       //console.log('exam', exam.questions);
       let examSolutions = [...user.examSolutions.values()];
@@ -187,7 +217,9 @@ export default {
         
       })
       */
-    },
+    //},
+
+    
 
     /*
     messages: async (user, args, { models }) => {

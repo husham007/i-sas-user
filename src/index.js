@@ -110,7 +110,8 @@ const createUsersWithMessages = async date => {
     username: 'masood2',
     email: 'masood2@integrify.io',
     password: 'masood123',
-    role: 'STUDENT'
+    role: 'STUDENT',
+    exams: new Map(),
   });
 
   const user3 = new models.User({
@@ -118,13 +119,15 @@ const createUsersWithMessages = async date => {
     email: 'masood3@integrify.io',
     password: 'masood123',
     role: 'STUDENT',
+    exams: new Map(),
   });
 
   const user4 = new models.User({
     username: 'masood4',
     email: 'masood4@integrify.io',
     password: 'masood123',
-    role: 'STUDENT'
+    role: 'STUDENT',
+    exams: new Map(),
   });
 
   const group1 = new models.Group({

@@ -16,14 +16,14 @@ export default gql`
       password: String!
       key: String!
       role: String!
-      url: String!
+      picture: String
     ): Token!
 
     signIn(email: String!, password: String!): Token!
     deleteUser(id: ID!): Boolean!
     updateUser(username: String!): User!
-    initializeUserExamSolution(examId: ID!, userId: ID!): Boolean!
-    finalizeUserExamSolution(examId: ID!, userId: ID!): Boolean!
+    initializeUserExamSolution(examId: ID!, solutionId: ID!, userId: ID!): Boolean!
+    finalizeUserExamSolution(examId: ID!,  solutionId: ID!, userId: ID!): Boolean!
 
     ######
     createGroup(name: String!, members: [String!]): Group!
@@ -31,7 +31,7 @@ export default gql`
 
 
     #######
-   publishExamToGroup(examId: ID!, groupId: ID!): Boolean!
+   publishExamToGroup(examId: ID!, groupId: ID! duration: String, time: String ): Boolean!
   
     }
   scalar Date
@@ -47,9 +47,20 @@ export default gql`
     password: String!
     role: String
     email: String!
-    exams: [Exam]
+   # exams: [Exam]
+    exams: [StudentExam] 
    # examSolutions: [ExamSolution]
-    examSolutions: [Solution]
+   # examSolutions: [Solution]
+  }
+
+  type StudentExam {
+    exam: Exam
+    solution: ExamSolution
+    status: String!
+    report: String
+    time: String
+    duration: String
+
   }
 
   type Group @key (fields: "id"){

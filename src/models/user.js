@@ -21,17 +21,10 @@ const userSchema = new Schema({
       maxlength: 60,
     },
     exams: {
-      type: Array,
-      of: String,  
-    },
-    examSolutions: {
       type: Map,
-      of: Object,
-    },
-    examReports: {
-      type: Array,
-      of: String,
-    },
+      of: Object,  
+    },   
+    
     group: {
       type: Array,
       of: mongoose.Schema.Types.ObjectId,
