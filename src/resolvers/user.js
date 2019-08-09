@@ -133,10 +133,10 @@ export default {
 
     finalizeUserExamSolution: combineResolvers(
       isTest,
-      async (parent, { examId, userId, solutionId }, { models, me }) => {
+      async (parent, { examId, userId}, { models, me }) => {
         const user = await models.User.findOne({ _id: userId });
         let exam = user.exams.get(examId);
-        exam.solution = solutionId;
+        //exam.solution = solutionId;
         exam.status = "finalized";
         user.exams.set(examId, exam);
        

@@ -23,7 +23,7 @@ export default gql`
     deleteUser(id: ID!): Boolean!
     updateUser(username: String!): User!
     initializeUserExamSolution(examId: ID!, solutionId: ID!, userId: ID!): Boolean!
-    finalizeUserExamSolution(examId: ID!,  solutionId: ID!, userId: ID!): Boolean!
+    finalizeUserExamSolution(examId: ID!,  userId: ID!): Boolean!
 
     ######
     createGroup(name: String!, members: [String!]): Group!
