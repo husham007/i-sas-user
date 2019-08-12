@@ -14,8 +14,7 @@ export default gql`
       username: String!
       email: String!
       password: String!
-      key: String!
-      role: String!
+      key: String!     
       picture: String
     ): Token!
 
