@@ -64,7 +64,7 @@ export default {
 
       //console.log(user);
 
-      return { token: createToken(user, secret, '30m') };
+      return { token: createToken(user, secret, '24h') };
     },
     signIn: async (
       parent,
@@ -85,7 +85,7 @@ export default {
         throw new AuthenticationError('Invalid password.');
       }
 
-      return { token: createToken(user, secret, '30m') };
+      return { token: createToken(user, secret, '24h') };
     },
 
     updateUser: combineResolvers(
